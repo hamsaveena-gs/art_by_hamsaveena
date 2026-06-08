@@ -2,6 +2,14 @@ import { render, screen } from '@testing-library/react';
 import ProductCard from '@/features/products/components/ProductCard';
 import type { Product } from '@/types';
 
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn() }),
+}));
+
+jest.mock('@/hooks/useUser', () => ({
+  useUser: () => ({ isLoggedIn: true, loading: false, firstName: 'Test' }),
+}));
+
 const product: Product = {
   id:           'p1',
   name:         'Sunset Painting',

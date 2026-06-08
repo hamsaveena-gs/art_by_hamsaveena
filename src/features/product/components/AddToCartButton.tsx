@@ -1,6 +1,8 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/features/cart/store/cartStore';
+import { useUser } from '@/hooks/useUser';
 import type { Product } from '@/types';
 import Button from '@/components/ui/Button';
 import Text from '@/components/ui/Text';
@@ -13,11 +15,20 @@ interface AddToCartButtonProps {
 }
 
 export default function AddToCartButton({ product, size = 'lg' }: AddToCartButtonProps) {
+  const router = useRouter();
+  const { isLoggedIn, loading } = useUser();
   const { addToCart, updateQuantity, items } = useCartStore();
   const cartItem = items.find((i) => i.product.id === product.id);
   const currentQty = cartItem?.quantity ?? 0;
   const inCart = currentQty > 0;
   const atMax = currentQty >= MAX_QTY;
+
+  const requireAuth = (e: React.MouseEvent, action: () => void) => {
+    e.preventDefault();
+    if (loading) return;
+    if (!isLoggedIn) { router.push('/login'); return; }
+    action();
+  };
 
   if (!product.inStock) {
     return (
@@ -34,7 +45,7 @@ export default function AddToCartButton({ product, size = 'lg' }: AddToCartButto
         <Button
           variant="custom"
           className="quantity-btn"
-          onClick={(e) => { e.preventDefault(); updateQuantity(product.id, currentQty - 1); }}
+          onClick={(e) => requireAuth(e, () => updateQuantity(product.id, currentQty - 1))}
           aria-label="Decrease quantity"
         >
           −
@@ -43,7 +54,7 @@ export default function AddToCartButton({ product, size = 'lg' }: AddToCartButto
         <Button
           variant="custom"
           className="quantity-btn"
-          onClick={(e) => { e.preventDefault(); updateQuantity(product.id, currentQty + 1); }}
+          onClick={(e) => requireAuth(e, () => updateQuantity(product.id, currentQty + 1))}
           disabled={atMax}
           aria-label="Increase quantity"
         >
@@ -59,7 +70,7 @@ export default function AddToCartButton({ product, size = 'lg' }: AddToCartButto
       <Button
         variant="primary"
         className="btn-sm"
-        onClick={(e) => { e.preventDefault(); addToCart(product); }}
+        onClick={(e) => requireAuth(e, () => addToCart(product))}
       >
         +
       </Button>
@@ -78,7 +89,7 @@ export default function AddToCartButton({ product, size = 'lg' }: AddToCartButto
   return (
     <Button
       variant={inCart ? 'success' : 'primary'}
-      onClick={(e) => { e.preventDefault(); addToCart(product); }}
+      onClick={(e) => requireAuth(e, () => addToCart(product))}
     >
       {inCart ? 'Added to Cart ✓' : 'Add to Cart'}
     </Button>

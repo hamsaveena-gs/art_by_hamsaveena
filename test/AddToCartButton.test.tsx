@@ -3,6 +3,14 @@ import AddToCartButton from '@/features/product/components/AddToCartButton';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import type { Product } from '@/types';
 
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn() }),
+}));
+
+jest.mock('@/hooks/useUser', () => ({
+  useUser: () => ({ isLoggedIn: true, loading: false, firstName: 'Test' }),
+}));
+
 jest.mock('@/features/cart/store/cartStore');
 
 const product: Product = {
