@@ -1,0 +1,64 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
+import type { Product } from '@/types';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapProduct(row: any): Product {
+  return {
+    id:            row.id,
+    name:          row.name,
+    category:      row.category,
+    price:         row.price,
+    originalPrice: row.original_price ?? undefined,
+    image:         row.image,
+    images:        row.images,
+    description:   row.description,
+    dimensions:    row.dimensions,
+    medium:        row.medium,
+    tags:          row.tags,
+    inStock:       row.in_stock,
+    featured:      row.featured,
+    rating:        row.rating,
+    reviews:       row.reviews,
+  };
+}
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const category = searchParams.get('category');
+  const price    = searchParams.get('price');
+  const q        = searchParams.get('q');
+  const featured = searchParams.get('featured');
+
+  let query = supabase.from('products').select('*');
+
+  if (category) {
+    query = query.eq('category', category);
+  }
+
+  if (featured === 'true') {
+    query = query.eq('featured', true);
+  }
+
+  if (price) {
+    const [minStr, maxStr] = price.split('-');
+    const min = minStr ? Number(minStr) : 0;
+    if (maxStr) {
+      query = query.gte('price', min).lte('price', Number(maxStr));
+    } else {
+      query = query.gte('price', min);
+    }
+  }
+
+  if (q) {
+    query = query.or(`name.ilike.%${q}%,tags.cs.{${q}}`);
+  }
+
+  const { data, error } = await query.order('id');
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json((data ?? []).map(mapProduct));
+}
