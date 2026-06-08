@@ -27,7 +27,16 @@ const schema = z.object({
     .regex(/^\d{4} \d{4} \d{4} \d{4}$/, 'Enter a valid 16-digit card number'),
   cardExpiry: z
     .string()
-    .regex(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Format: MM/YY'),
+    .regex(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Format: MM/YY')
+    .refine((val) => {
+      const [mm, yy] = val.split('/');
+      const month = parseInt(mm, 10);
+      const year = 2000 + parseInt(yy, 10);
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const currentYear = now.getFullYear();
+      return year > currentYear || (year === currentYear && month >= currentMonth);
+    }, 'Card has expired'),
   cardCvc: z
     .string()
     .regex(/^\d{3,4}$/, 'CVC must be 3 or 4 digits'),

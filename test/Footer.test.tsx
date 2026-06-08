@@ -17,9 +17,9 @@ describe('Footer', () => {
     expect(screen.getByRole('link', { name: 'Shop' })).toHaveAttribute('href', '/products');
   });
 
-  it('renders a Cart link', () => {
+  it('does not render a Cart link', () => {
     render(<Footer />);
-    expect(screen.getByRole('link', { name: 'Cart' })).toHaveAttribute('href', '/cart');
+    expect(screen.queryByRole('link', { name: 'Cart' })).not.toBeInTheDocument();
   });
 
   it('renders the copyright with the current year', () => {

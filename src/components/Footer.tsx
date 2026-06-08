@@ -12,7 +12,6 @@ export default function Footer() {
         <nav className="footer-links">
           <Link href="/" className="footer-link">Home</Link>
           <Link href="/products" className="footer-link">Shop</Link>
-          <Link href="/cart" className="footer-link">Cart</Link>
         </nav>
 
         <Text variant="footnote">
