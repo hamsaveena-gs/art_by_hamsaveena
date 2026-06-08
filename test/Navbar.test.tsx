@@ -1,14 +1,16 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Navbar from '@/features/nav/components/Navbar';
 
+const mockPush = jest.fn();
 jest.mock('next/navigation', () => ({
   usePathname: () => '/',
-  useRouter:   () => ({ push: jest.fn() }),
+  useRouter:   () => ({ push: mockPush }),
 }));
 
+const mockSignOut = jest.fn();
 jest.mock('@/lib/supabase', () => ({
   getSupabase: () => ({
-    auth: { signOut: jest.fn().mockResolvedValue({}) },
+    auth: { signOut: mockSignOut },
   }),
 }));
 
@@ -18,6 +20,10 @@ jest.mock('@/hooks/useUser', () => ({
 }));
 
 describe('Navbar', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('shows Login link when logged out', () => {
     mockUseUser.mockReturnValue({ firstName: null, isLoggedIn: false, loading: false });
     render(<Navbar />);
@@ -48,5 +54,17 @@ describe('Navbar', () => {
     render(<Navbar />);
     expect(screen.getAllByRole('link', { name: 'Home' }).length).toBeGreaterThan(0);
     expect(screen.getAllByRole('link', { name: 'Shop' }).length).toBeGreaterThan(0);
+  });
+
+  it('calls signOut and redirects to /login when Sign out is clicked', async () => {
+    mockSignOut.mockResolvedValue({});
+    mockUseUser.mockReturnValue({ firstName: 'Hamsaveena', isLoggedIn: true, loading: false });
+    render(<Navbar />);
+    const signOutButtons = screen.getAllByRole('button', { name: 'Sign out' });
+    fireEvent.click(signOutButtons[0]);
+    await waitFor(() => {
+      expect(mockSignOut).toHaveBeenCalledTimes(1);
+      expect(mockPush).toHaveBeenCalledWith('/login');
+    });
   });
 });
