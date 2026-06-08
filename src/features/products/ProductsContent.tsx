@@ -6,6 +6,8 @@ import ProductGrid from '@/features/products/components/ProductGrid';
 import Pagination from '@/components/ui/Pagination';
 import { categories } from '@/lib/products';
 import Heading from '@/components/ui/Heading';
+import { getSupabase } from '@/lib/supabase';
+import { mapProduct } from '@/lib/mapProduct';
 
 const PAGE_SIZE = 8;
 
@@ -21,21 +23,25 @@ async function fetchProducts(q?: string, category?: string, price?: string): Pro
     await new Promise((r) => setTimeout(r, 1500));
   }
 
-  const params = new URLSearchParams();
-  if (q)        params.set('q', q);
-  if (category) params.set('category', category);
-  if (price)    params.set('price', price);
+  let query = getSupabase().from('products').select('*');
 
-  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    ? `${process.env.NEXTAUTH_URL ?? 'http://localhost:3002'}`
-    : 'http://localhost:3002';
+  if (category) query = query.eq('category', category);
 
-  const res = await fetch(`${baseUrl}/api/products?${params.toString()}`, {
-    cache: 'no-store',
-  });
+  if (price) {
+    const [minStr, maxStr] = price.split('-');
+    const min = minStr ? Number(minStr) : 0;
+    if (maxStr) {
+      query = query.gte('price', min).lte('price', Number(maxStr));
+    } else {
+      query = query.gte('price', min);
+    }
+  }
 
-  if (!res.ok) return [];
-  return res.json();
+  if (q) query = query.or(`name.ilike.%${q}%,tags.cs.{${q}}`);
+
+  const { data, error } = await query.order('id');
+  if (error) return [];
+  return (data ?? []).map(mapProduct);
 }
 
 export default async function ProductsContent({ q, category, price, page = 1 }: ProductsContentProps) {
