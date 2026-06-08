@@ -11,6 +11,7 @@ import CartIcon from '@/features/nav/components/CartIcon';
 const navLinks = [
   { href: '/',         label: 'Home' },
   { href: '/products', label: 'Shop' },
+  { href: '/login',    label: 'Login' },
 ];
 
 export default function Navbar() {

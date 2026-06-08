@@ -1487,6 +1487,112 @@ body {
   user-select: none;
 }
 
+/* ── Login Page ── */
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 10rem);
+  padding: 2rem 1rem;
+  background: radial-gradient(ellipse at 50% 0%, rgba(200, 169, 110, 0.07) 0%, transparent 65%);
+}
+
+.login-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 26rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--fg);
+  font-family: var(--font-display);
+  margin-bottom: 0.375rem;
+}
+
+.login-subtitle {
+  font-size: 0.9375rem;
+  color: var(--fg-muted);
+}
+
+.login-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.login-error {
+  font-size: 0.875rem;
+  color: var(--danger);
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+}
+
+.login-footer-text {
+  text-align: center;
+  margin-top: 1.5rem;
+  display: block;
+}
+
+.login-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.login-link:hover { text-decoration: underline; }
+
+.login-brand-top {
+  text-align: center;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.login-brand-name {
+  font-family: var(--font-accent);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  display: block;
+  letter-spacing: -0.01em;
+}
+
+.login-brand-tagline {
+  font-size: 0.8125rem;
+  color: var(--fg-muted);
+  margin-top: 0.25rem;
+}
+
+.login-forgot-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.375rem;
+}
+
+.login-link--sm {
+  font-size: 0.8125rem;
+}
+
+.login-separator {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.5rem 0 1rem;
+}
+
 /* ── 404 / Error Pages ── */
 .status-page {
   display: flex;
