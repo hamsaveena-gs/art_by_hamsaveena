@@ -3,7 +3,9 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod/v4';
+import { useEffect } from 'react';
 import { useCartStore } from '@/features/cart/store/cartStore';
+import { useUser } from '@/hooks/useUser';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import OrderSummary from '@/features/checkout/components/OrderSummary';
@@ -74,6 +76,7 @@ export default function CheckoutForm() {
   const { items, totalPrice, clearCart } = useCartStore();
   const router = useRouter();
   const price = totalPrice();
+  const { firstName, lastName, email, loading } = useUser();
 
   const {
     register,
@@ -81,6 +84,15 @@ export default function CheckoutForm() {
     setValue,
     formState: { errors, isSubmitting, isSubmitSuccessful },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
+
+  // Prefill shipping fields once the session resolves
+  useEffect(() => {
+    if (loading) return;
+    if (firstName) setValue('firstName', firstName);
+    if (lastName)  setValue('lastName',  lastName);
+    if (email)     setValue('email',     email);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   const onSubmit = async (data: FormValues) => {
     await fetch('/api/orders', {
