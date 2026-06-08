@@ -48,4 +48,26 @@ describe('NavDrawer', () => {
     fireEvent.click(container.querySelector('.nav-drawer-overlay')!);
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it('shows greeting and sign out when firstName is provided', () => {
+    render(
+      <NavDrawer isOpen navLinks={links} onClose={jest.fn()} pathname="/" firstName="Hamsaveena" onSignOut={jest.fn()} />,
+    );
+    expect(screen.getByRole('heading', { level: 2, name: 'Hi, Hamsaveena' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
+  });
+
+  it('does not show greeting when firstName is not provided', () => {
+    render(<NavDrawer isOpen navLinks={links} onClose={jest.fn()} pathname="/" />);
+    expect(screen.queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
+  });
+
+  it('calls onSignOut when sign out button is clicked', () => {
+    const onSignOut = jest.fn();
+    render(
+      <NavDrawer isOpen navLinks={links} onClose={jest.fn()} pathname="/" firstName="Hamsaveena" onSignOut={onSignOut} />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Sign out' }));
+    expect(onSignOut).toHaveBeenCalledTimes(1);
+  });
 });

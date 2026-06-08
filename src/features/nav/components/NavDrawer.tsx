@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
+import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 
 interface NavLink {
@@ -14,9 +15,18 @@ interface NavDrawerProps {
   onClose: () => void;
   navLinks: NavLink[];
   pathname: string;
+  firstName?: string | null;
+  onSignOut?: () => void;
 }
 
-export default function NavDrawer({ isOpen, onClose, navLinks, pathname }: NavDrawerProps) {
+export default function NavDrawer({
+  isOpen,
+  onClose,
+  navLinks,
+  pathname,
+  firstName,
+  onSignOut,
+}: NavDrawerProps) {
   return (
     <>
       {isOpen && (
@@ -29,6 +39,16 @@ export default function NavDrawer({ isOpen, onClose, navLinks, pathname }: NavDr
             ✕
           </Button>
         </div>
+
+        {firstName && (
+          <div className="nav-drawer-user">
+            <Heading as="h2" className="nav-drawer-greeting">Hi, {firstName}</Heading>
+            <Button variant="custom" className="nav-drawer-signout" onClick={onSignOut}>
+              Sign out
+            </Button>
+          </div>
+        )}
+
         <nav className="nav-drawer-list">
           {navLinks.map(({ href, label }) => (
             <Link

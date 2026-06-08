@@ -555,6 +555,32 @@ body {
   gap: 0.75rem;
 }
 
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.nav-greeting {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--accent);
+  font-family: var(--font-display);
+  white-space: nowrap;
+}
+
+.nav-signout {
+  font-size: 0.8125rem;
+  color: var(--fg-muted);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: inherit;
+}
+.nav-signout:hover { color: var(--fg); }
+
 /* Cart icon */
 .cart-icon {
   position: relative;
@@ -651,6 +677,32 @@ body {
   transition: color 0.2s;
 }
 .nav-drawer-close:hover { color: var(--fg); }
+
+.nav-drawer-user {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-drawer-greeting {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-display);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.nav-drawer-signout {
+  font-size: 0.875rem;
+  color: var(--fg-muted);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: inherit;
+}
+.nav-drawer-signout:hover { color: var(--fg); }
 
 .nav-drawer-list {
   display: flex;
