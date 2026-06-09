@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod/v4';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
@@ -12,15 +11,14 @@ import Text from '@/components/ui/Text';
 import { getSupabase } from '@/lib/supabase';
 
 const schema = z.object({
-  email:    z.email('Enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.email('Enter a valid email address'),
 });
 
 type FormValues = z.infer<typeof schema>;
 
-export default function LoginForm() {
-  const router = useRouter();
+export default function ForgotPasswordForm() {
   const [authError, setAuthError] = useState<string | null>(null);
+  const [success,   setSuccess]   = useState(false);
 
   const {
     register,
@@ -30,16 +28,35 @@ export default function LoginForm() {
 
   const onSubmit = async (data: FormValues) => {
     setAuthError(null);
-    const { error } = await getSupabase().auth.signInWithPassword({
-      email:    data.email,
-      password: data.password,
+    const redirectTo = `${window.location.origin}/reset-password`;
+    const { error } = await getSupabase().auth.resetPasswordForEmail(data.email, {
+      redirectTo,
     });
     if (error) {
       setAuthError(error.message);
       return;
     }
-    router.push('/');
+    setSuccess(true);
   };
+
+  if (success) {
+    return (
+      <div className="login-container">
+        <div className="login-card" style={{ textAlign: 'center' }}>
+          <div className="success-icon" style={{ margin: '0 auto 1.5rem' }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <Heading as="h1" className="login-title">Check your email</Heading>
+          <Text variant="muted" className="login-subtitle" as="p">
+            We sent a password reset link to your email. It expires in 1 hour.
+          </Text>
+          <Button href="/login" variant="primary" className="w-full mt-6">Back to Sign In</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="login-container">
@@ -53,8 +70,8 @@ export default function LoginForm() {
 
         {/* Header */}
         <div className="login-header">
-          <Heading as="h1" className="login-title">Welcome Back</Heading>
-          <Text variant="muted" className="login-subtitle">Sign in to continue to your account</Text>
+          <Heading as="h1" className="login-title">Reset Password</Heading>
+          <Text variant="muted" className="login-subtitle">Enter your email to receive a reset link</Text>
         </div>
 
         {/* Form */}
@@ -69,20 +86,6 @@ export default function LoginForm() {
               error={errors.email?.message}
               {...register('email')}
             />
-            <div>
-              <Input
-                label="Password"
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="••••••••"
-                error={errors.password?.message}
-                {...register('password')}
-              />
-              <div className="login-forgot-row">
-                <a href="/forgot-password" className="login-link login-link--sm">Forgot password?</a>
-              </div>
-            </div>
           </div>
 
           {authError && (
@@ -95,15 +98,15 @@ export default function LoginForm() {
             className="w-full mt-6"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Signing in…' : 'Sign In'}
+            {isSubmitting ? 'Sending…' : 'Send Reset Link'}
           </Button>
         </form>
 
         {/* Footer */}
         <hr className="login-separator" />
         <Text variant="footnote" className="login-footer-text">
-          Don&apos;t have an account?{' '}
-          <a href="/signup" className="login-link">Sign up free</a>
+          Remember your password?{' '}
+          <a href="/login" className="login-link">Sign in</a>
         </Text>
 
       </div>
