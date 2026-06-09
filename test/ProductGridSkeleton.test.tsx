@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import ProductGridSkeleton from '@/features/products/components/ProductGridSkeleton';
+import ProductGridSkeleton from '@/components/skeleton/ProductGridSkeleton';
 
 describe('ProductGridSkeleton', () => {
   it('renders 8 product card skeletons', () => {

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import ProductCardSkeleton from '@/features/products/components/ProductCardSkeleton';
+import ProductCardSkeleton from '@/components/skeleton/ProductCardSkeleton';
 
 describe('ProductCardSkeleton', () => {
   it('renders the card container', () => {

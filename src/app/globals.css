@@ -1551,6 +1551,13 @@ body {
 .skeleton-category-card   { min-height: 6rem; border-radius: var(--radius); }
 .skeleton-view-all        { width: 6rem; height: 2.25rem; border-radius: var(--radius); }
 
+/* Product detail page skeleton */
+.skeleton-detail-name { height: 2.5rem; width: 85%; border-radius: 0.25rem; }
+.skeleton-stars       { height: 1rem;   width: 10rem; border-radius: 0.25rem; }
+.skeleton-price       { height: 3.5rem; width: 100%; border-radius: 0.25rem; }
+.skeleton-tag         { height: 1.5rem; width: 4rem;  border-radius: 9999px; }
+.skeleton-btn-lg      { height: 3rem;   width: 100%; border-radius: var(--radius); }
+
 /* ── Pagination ── */
 .pagination {
   display: flex;

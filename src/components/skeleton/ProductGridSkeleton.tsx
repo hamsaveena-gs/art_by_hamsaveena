@@ -1,4 +1,4 @@
-import ProductCardSkeleton from '@/features/products/components/ProductCardSkeleton';
+import ProductCardSkeleton from '@/components/skeleton/ProductCardSkeleton';
 
 const PAGE_SIZE = 8;
 
