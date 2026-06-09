@@ -68,7 +68,7 @@ export default async function ProductsContent({ q, category, price, page = 1 }: 
           <FilterSidebar />
         </Suspense>
         <div className="products-main">
-          <ProductGrid products={pageProducts} totalCount={totalCount} />
+          <ProductGrid products={pageProducts} totalCount={totalCount} query={q} />
           <Suspense>
             <Pagination currentPage={page} totalPages={totalPages} />
           </Suspense>

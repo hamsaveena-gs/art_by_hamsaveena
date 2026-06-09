@@ -1006,6 +1006,22 @@ body {
 .product-card-price { font-size: 1rem; font-weight: 700; color: var(--fg); }
 .product-card-original { font-size: 0.8125rem; color: var(--fg-subtle); text-decoration: line-through; }
 
+/* ── Search highlight ── */
+.search-highlight { background: #fff3b0; color: var(--fg); border-radius: 2px; padding: 0 1px; font-style: normal; }
+
+/* ── Matched tags (shown when search is active and a tag matched) ── */
+.product-card-matched-tags { display: flex; flex-wrap: wrap; gap: 0.25rem; margin: 0.35rem 0 0.1rem; }
+.product-card-matched-tag {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  line-height: 1.6;
+}
+
 /* ── Products Page Layout ── */
 .products-page-header {
   display: flex;
@@ -1163,6 +1179,56 @@ body {
   transition: color 0.2s;
 }
 .search-btn:hover { color: var(--fg); }
+
+/* ── Search wrapper (positions dropdown relative to form) ── */
+.search-wrapper {
+  position: relative;
+  max-width: 28rem;
+  width: 100%;
+}
+
+.search-wrapper .search-form {
+  max-width: 100%;
+}
+
+/* ── Suggestions dropdown ── */
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.search-suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.875rem;
+  color: var(--fg);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.search-suggestion-item:hover,
+.search-suggestion-item--active {
+  background: var(--bg-subtle, #f5f5f5);
+  color: var(--accent);
+}
+
+.search-suggestion-icon {
+  flex-shrink: 0;
+  color: var(--fg-subtle);
+}
 
 /* ── Empty State ── */
 .empty-state {

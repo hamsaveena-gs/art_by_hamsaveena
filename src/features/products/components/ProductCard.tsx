@@ -7,9 +7,28 @@ import Text from '@/components/ui/Text';
 
 interface ProductCardProps {
   product: Product;
+  query?: string;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+/** Wraps the matching substring in <mark> for highlight. Returns plain string if no match. */
+function highlightMatch(text: string, query: string): React.ReactNode {
+  const index = text.toLowerCase().indexOf(query.toLowerCase());
+  if (index === -1) return text;
+  return (
+    <>
+      {text.slice(0, index)}
+      <mark className="search-highlight">{text.slice(index, index + query.length)}</mark>
+      {text.slice(index + query.length)}
+    </>
+  );
+}
+
+export default function ProductCard({ product, query }: ProductCardProps) {
+  // Tags that contain the search query (case-insensitive)
+  const matchedTags = query
+    ? product.tags.filter((tag) => tag.toLowerCase().includes(query.toLowerCase()))
+    : [];
+
   return (
     <div className="product-card">
       <Link href={`/products/${product.id}`} className="product-card-image-wrap">
@@ -31,8 +50,21 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="product-card-body">
         <Link href={`/products/${product.id}`} className="product-card-link">
           <Text variant="plain" as="p" className="product-card-category">{product.category}</Text>
-          <Heading as="h3" className="product-card-name">{product.name}</Heading>
+          <Heading as="h3" className="product-card-name">
+            {query ? highlightMatch(product.name, query) : product.name}
+          </Heading>
         </Link>
+
+        {/* Show matched tags only when search is active */}
+        {matchedTags.length > 0 && (
+          <div className="product-card-matched-tags">
+            {matchedTags.map((tag) => (
+              <span key={tag} className="product-card-matched-tag">
+                {highlightMatch(tag, query!)}
+              </span>
+            ))}
+          </div>
+        )}
 
         <div className="product-card-footer">
           <div className="product-card-price-wrap">

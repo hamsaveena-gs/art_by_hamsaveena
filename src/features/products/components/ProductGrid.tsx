@@ -5,9 +5,10 @@ import Text from '@/components/ui/Text';
 interface ProductGridProps {
   products: Product[];
   totalCount?: number;
+  query?: string;
 }
 
-export default function ProductGrid({ products, totalCount }: ProductGridProps) {
+export default function ProductGrid({ products, totalCount, query }: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div className="empty-state">
@@ -26,7 +27,7 @@ export default function ProductGrid({ products, totalCount }: ProductGridProps) 
       </Text>
       <div className="product-grid">
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product} query={query} />
         ))}
       </div>
     </>
