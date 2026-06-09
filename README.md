@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Art by Hamsaveena
 
-## Getting Started
+A production-quality e-commerce art store built with Next.js 16 App Router. Customers browse original artworks across six categories, add items to a persistent cart (login required), and complete checkout. A confirmation email is sent via Gmail SMTP on every successful order.
 
-First, run the development server:
+**Live:** https://art-by-hamsaveena-hamsaveenas-projects.vercel.app
+
+---
+
+## Tech stack
+
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16.2.7 (App Router) |
+| Language | TypeScript 5 |
+| UI | React 19 |
+| Styling | Single `globals.css` — no Tailwind in JSX, no CSS Modules |
+| Forms | React Hook Form 7 + Zod v4 |
+| Cart state | Zustand v5 + `persist` middleware |
+| Backend / Auth | Supabase (Postgres + Auth) |
+| Email | Nodemailer 8 + Gmail SMTP |
+| Testing | Jest 30 + Testing Library React 16 |
+
+---
+
+## Getting started
 
 ```bash
+# Install dependencies
+npm install
+
+# Start dev server on port 3002
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3002](http://localhost:3002).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create `.env.local` in the project root:
 
-## Learn More
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+EMAIL_USER=your_gmail_address
+EMAIL_PASS=your_gmail_app_password
+```
 
-To learn more about Next.js, take a look at the following resources:
+> Gmail app password: generate one at **Google Account → Security → App passwords**. Paste it including spaces.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project structure
 
-## Deploy on Vercel
+```
+src/
+  app/              Next.js App Router pages + API routes
+  components/       Shared UI primitives (Button, Heading, Input, Select, Text)
+  features/         Feature slices — auth, cart, checkout, home, nav, product, products
+  hooks/            useUser — single source of truth for auth state
+  lib/              supabase singleton, mapProduct mapper, static categories
+  types/            Category, Product, CartItem interfaces
+test/               Jest test files (co-located with src is not used)
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Pages
+
+| Route | Description |
+|---|---|
+| `/` | Home — hero, featured products, category grid |
+| `/products` | Shop — filter by category/price, search, pagination |
+| `/products/[id]` | Product detail — images, info, add to cart, related |
+| `/cart` | Cart — item list, quantity controls, summary |
+| `/checkout` | Checkout — shipping + payment form, order summary |
+| `/checkout/success` | Order confirmation |
+| `/login` | Sign in |
+| `/signup` | Create account |
+
+---
+
+## API routes
+
+| Route | Method | Purpose |
+|---|---|---|
+| `/api/products` | GET | Fetch all products from Supabase |
+| `/api/categories` | GET | Fetch all categories |
+| `/api/orders` | POST | Save order + send confirmation email |
+
+---
+
+## Running tests
+
+```bash
+npm test                # run all tests
+npm run test:watch      # watch mode
+npm run test:coverage   # coverage report
+```
+
+**271 tests · 40 suites · ~87% statement coverage**
+
+---
+
+## Deployment
+
+The app is deployed on Vercel. Every push to `main` triggers a production deploy.
+
+```bash
+vercel --prod   # manual deploy (requires Vercel CLI)
+```
+
+Make sure all four environment variables are set in the Vercel project settings.
+
+---
+
+## Art categories
+
+Painting · Clay Art · Canvas Art · Postcard Art · Sketching · Digital Art
