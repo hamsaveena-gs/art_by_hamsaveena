@@ -17,7 +17,7 @@ function mapProduct(row: any): Product {
     dimensions:    row.dimensions,
     medium:        row.medium,
     tags:          row.tags,
-    inStock:       row.in_stock,
+    inStock:       (row.stock_quantity ?? 0) > 0,
     featured:      row.featured,
     rating:        row.rating,
     reviews:       row.reviews,

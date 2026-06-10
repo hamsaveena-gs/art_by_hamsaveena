@@ -129,8 +129,9 @@ src/
 ## Database (Supabase)
 
 **Tables in `public` schema:**
-- `products` — columns map to `Product` type via `mapProduct.ts`
+- `products` — columns map to `Product` type via `mapProduct.ts`; includes `stock_quantity INTEGER NOT NULL DEFAULT 1`
 - `categories` — referenced by `/api/categories`
+- `orders` — stores completed orders; columns: `id`, `user_id`, `first_name`, `last_name`, `email`, `phone`, `address`, `city`, `postcode`, `country`, `items` (JSONB), `subtotal`, `shipping`, `total`, `created_at`
 
 **Auth:** Supabase built-in `auth.users`. No custom `public.users` table.
 - `first_name` and `last_name` stored in `user_metadata` on `auth.users`
@@ -185,7 +186,16 @@ Server components query Supabase directly (no HTTP round-trip) using `getSupabas
 
 - Provider: Gmail SMTP
 - Env vars: `EMAIL_USER`, `EMAIL_PASS` (Gmail app password — include spaces as-is)
-- Triggered from `POST /api/orders`
+- Triggered from `POST /api/orders` — sends two emails: store notification + customer confirmation
+
+## Orders API
+
+`POST /api/orders` flow:
+1. Validates payload, calculates totals (shipping free ≥ ₹150, else ₹50)
+2. Inserts into `orders` table with user_id from session
+3. Decrements `stock_quantity` on each `products` row (matched by name)
+4. Sends two non-blocking emails: admin notification + customer confirmation
+5. Returns `{ success: true }`
 
 ---
 

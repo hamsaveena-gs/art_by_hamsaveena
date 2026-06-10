@@ -8,21 +8,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ exists: false }, { status: 400 });
   }
 
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceKey) {
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!key) {
     return NextResponse.json({ exists: false }, { status: 500 });
   }
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    serviceKey,
+    key,
   );
 
-  const { data, error } = await supabase.auth.admin.getUserByEmail(email);
+  const { data, error } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+  const exists = !error && (data?.users?.some(
+    (u) => u.email?.toLowerCase() === email.toLowerCase(),
+  ) ?? false);
 
-  if (error || !data?.user) {
-    return NextResponse.json({ exists: false });
-  }
-
-  return NextResponse.json({ exists: true });
+  return NextResponse.json({ exists });
 }

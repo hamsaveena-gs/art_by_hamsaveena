@@ -14,7 +14,7 @@ describe('mapProduct', () => {
     dimensions:     '30x40cm',
     medium:         'Oil on canvas',
     tags:           ['sunset', 'painting'],
-    in_stock:       true,
+    stock_quantity: 5,
     featured:       true,
     rating:         4.5,
     reviews:        12,
@@ -40,8 +40,8 @@ describe('mapProduct', () => {
     expect(product.originalPrice).toBeUndefined();
   });
 
-  it('maps in_stock to inStock', () => {
-    expect(mapProduct({ ...row, in_stock: false }).inStock).toBe(false);
-    expect(mapProduct({ ...row, in_stock: true }).inStock).toBe(true);
+  it('derives inStock from stock_quantity', () => {
+    expect(mapProduct({ ...row, stock_quantity: 0 }).inStock).toBe(false);
+    expect(mapProduct({ ...row, stock_quantity: 1 }).inStock).toBe(true);
   });
 });
