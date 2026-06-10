@@ -45,7 +45,7 @@ export default function ProductCard({ product, query }: ProductCardProps) {
             Only {product.stockQuantity} left
           </Text>
         )}
-        {product.originalPrice && (
+        {product.inStock && product.originalPrice && (
           <Text variant="plain" as="span" className="product-card-sale">Sale</Text>
         )}
       </Link>

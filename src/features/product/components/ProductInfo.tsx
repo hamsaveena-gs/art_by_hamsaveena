@@ -35,10 +35,10 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
       <div className="product-info-price">
         <Text variant="plain" as="span" className="price-main">₹{product.price}</Text>
-        {product.originalPrice && (
+        {product.inStock && product.originalPrice && (
           <Text variant="plain" as="span" className="price-original">₹{product.originalPrice}</Text>
         )}
-        {product.originalPrice && (
+        {product.inStock && product.originalPrice && (
           <Text variant="plain" as="span" className="price-save">
             Save ₹{product.originalPrice - product.price}
           </Text>
