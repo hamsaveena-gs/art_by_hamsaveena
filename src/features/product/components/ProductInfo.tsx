@@ -64,6 +64,17 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         ))}
       </div>
 
+      {product.inStock ? (
+        <Text variant="muted" as="p" className="product-stock">
+          {product.stockQuantity <= 3
+            ? `Only ${product.stockQuantity} left in stock`
+            : `${product.stockQuantity} in stock`}
+        </Text>
+      ) : (
+        <Text variant="muted" as="p" className="product-stock">
+          Out of stock
+        </Text>
+      )}
       <AddToCartButton product={product} size="lg" />
     </div>
   );

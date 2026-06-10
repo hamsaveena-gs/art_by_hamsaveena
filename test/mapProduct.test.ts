@@ -30,6 +30,7 @@ describe('mapProduct', () => {
     expect(product.originalPrice).toBe(399);
     expect(product.image).toBe('https://example.com/img.jpg');
     expect(product.inStock).toBe(true);
+    expect(product.stockQuantity).toBe(5);
     expect(product.featured).toBe(true);
     expect(product.rating).toBe(4.5);
     expect(product.reviews).toBe(12);

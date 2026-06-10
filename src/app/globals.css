@@ -952,6 +952,20 @@ body {
 }
 .product-card:hover .product-card-image { transform: scale(1.04); }
 
+.product-card-low-stock {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background-color: var(--accent);
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+}
+
 .product-card-sold-out {
   position: absolute;
   top: 0.75rem;
@@ -1312,6 +1326,7 @@ body {
 .product-meta-row dt { font-weight: 600; color: var(--fg); min-width: 6rem; }
 .product-meta-row dd { color: var(--fg-muted); }
 
+.product-stock { margin-top: 0.5rem; font-weight: 500; }
 .product-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .tag {
   font-size: 0.75rem;

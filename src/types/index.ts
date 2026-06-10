@@ -26,6 +26,7 @@ export interface Product {
   medium: string;
   tags: string[];
   inStock: boolean;
+  stockQuantity: number;
   featured: boolean;
   rating: number;
   reviews: number;
