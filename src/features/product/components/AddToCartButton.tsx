@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import { useUser } from '@/hooks/useUser';
+import { useState, useCallback } from 'react';
 import type { Product } from '@/types';
 import Button from '@/components/ui/Button';
 import Text from '@/components/ui/Text';
@@ -18,6 +19,7 @@ export default function AddToCartButton({ product, size = 'lg' }: AddToCartButto
   const router = useRouter();
   const { isLoggedIn, loading } = useUser();
   const { addToCart, updateQuantity, items } = useCartStore();
+  const [stockError, setStockError] = useState(false);
   const cartItem = items.find((i) => i.product.id === product.id);
   const currentQty = cartItem?.quantity ?? 0;
   const inCart = currentQty > 0;
@@ -29,6 +31,29 @@ export default function AddToCartButton({ product, size = 'lg' }: AddToCartButto
     if (!isLoggedIn) { router.push('/login'); return; }
     action();
   };
+
+  const checkStockThenAdd = useCallback(async () => {
+    setStockError(false);
+    try {
+      const res = await fetch(`/api/products/${product.id}/stock`);
+      const { stock_quantity } = await res.json();
+      if (stock_quantity <= 0) {
+        setStockError(true);
+        return;
+      }
+      addToCart(product);
+    } catch {
+      addToCart(product);
+    }
+  }, [product, addToCart]);
+
+  if (stockError) {
+    return (
+      <Button variant="secondary" className={size === 'sm' ? 'btn-sm' : ''} disabled>
+        Sold Out
+      </Button>
+    );
+  }
 
   if (!product.inStock) {
     return (

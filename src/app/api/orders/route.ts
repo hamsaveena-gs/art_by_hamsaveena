@@ -91,7 +91,37 @@ export async function POST(request: NextRequest) {
   const supabase = getSupabase();
   const { data: { session } } = await supabase.auth.getSession();
 
-  // ── Save order ──
+  // ── Reserve stock then save order ──
+  for (const item of items) {
+    const { data: product } = await supabase
+      .from('products')
+      .select('id')
+      .eq('name', item.name)
+      .single();
+
+    if (!product) {
+      return NextResponse.json({
+        error: `Product "${item.name}" not found`,
+      }, { status: 400 });
+    }
+
+    const { data: ok, error: rpcError } = await supabase.rpc('decrement_stock', {
+      pid: product.id,
+      qty: item.quantity,
+    });
+
+    if (rpcError) {
+      console.error('Stock decrement RPC error:', rpcError);
+      return NextResponse.json({ error: 'Failed to process order' }, { status: 500 });
+    }
+
+    if (!ok) {
+      return NextResponse.json({
+        error: `Insufficient stock for "${item.name}"`,
+      }, { status: 409 });
+    }
+  }
+
   const { error: dbError } = await supabase.from('orders').insert({
     user_id:    session?.user?.id ?? null,
     first_name: firstName,
@@ -109,25 +139,7 @@ export async function POST(request: NextRequest) {
   });
 
   if (dbError) {
-    console.error('Order insert error:', dbError);
-    return NextResponse.json({ error: 'Failed to save order' }, { status: 500 });
-  }
-
-  // ── Decrement stock ──
-  for (const item of items) {
-    const { data: product } = await supabase
-      .from('products')
-      .select('id, stock_quantity')
-      .eq('name', item.name)
-      .single();
-
-    if (product && (product.stock_quantity ?? 0) > 0) {
-      const newQty = Math.max(0, product.stock_quantity - item.quantity);
-      await supabase
-        .from('products')
-        .update({ stock_quantity: newQty })
-        .eq('id', product.id);
-    }
+    console.error('Order insert error (stock already reserved):', dbError);
   }
 
   // ── Send emails (non-blocking — order is already saved) ──
