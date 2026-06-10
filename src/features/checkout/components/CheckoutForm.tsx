@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod/v4';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import { useUser } from '@/hooks/useUser';
 import Input from '@/components/ui/Input';
@@ -77,6 +77,7 @@ export default function CheckoutForm() {
   const router = useRouter();
   const price = totalPrice();
   const { firstName, lastName, email, loading } = useUser();
+  const [orderError, setOrderError] = useState<string | null>(null);
 
   const {
     register,
@@ -95,7 +96,8 @@ export default function CheckoutForm() {
   }, [loading]);
 
   const onSubmit = async (data: FormValues) => {
-    await fetch('/api/orders', {
+    setOrderError(null);
+    const res = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -107,6 +109,11 @@ export default function CheckoutForm() {
         })),
       }),
     });
+    if (!res.ok) {
+      const { error } = await res.json();
+      setOrderError(error || 'Something went wrong');
+      return;
+    }
     clearCart();
     router.push('/checkout/success');
   };
