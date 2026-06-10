@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 
 interface UserInfo {
@@ -19,6 +20,7 @@ function extractUser(session: { user: { email?: string; user_metadata?: Record<s
 }
 
 export function useUser(): UserInfo {
+  const router = useRouter();
   const [info, setInfo] = useState<UserInfo>({
     firstName:  null,
     lastName:   null,
@@ -30,19 +32,21 @@ export function useUser(): UserInfo {
   useEffect(() => {
     const supabase = getSupabase();
 
-    // Seed from the current session immediately
     supabase.auth.getSession().then(({ data: { session } }) => {
       setInfo({ ...extractUser(session), loading: false });
     });
 
-    // Stay in sync when the user logs in or out
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         setInfo({ ...extractUser(session), loading: false });
+        if (event === 'PASSWORD_RECOVERY') {
+          router.push('/reset-password');
+        }
       },
     );
 
     return () => subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return info;

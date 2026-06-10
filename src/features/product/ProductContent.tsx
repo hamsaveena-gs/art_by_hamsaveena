@@ -11,11 +11,11 @@ interface ProductContentProps {
 }
 
 async function fetchProduct(slug: string): Promise<Product | null> {
-  const namePattern = slug.replace(/-/g, ' ');
+  const pattern = slug.split('-').join('%');
   const { data, error } = await getSupabase()
     .from('products')
     .select('*')
-    .ilike('name', `%${namePattern}%`)
+    .ilike('name', `%${pattern}%`)
     .order('id')
     .limit(1)
     .maybeSingle();

@@ -30,6 +30,19 @@ export default function LoginForm() {
 
   const onSubmit = async (data: FormValues) => {
     setAuthError(null);
+
+    const res = await fetch('/api/auth/check-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: data.email }),
+    });
+    const { exists } = await res.json();
+
+    if (!exists) {
+      setAuthError('No account found with this email address');
+      return;
+    }
+
     const { error } = await getSupabase().auth.signInWithPassword({
       email:    data.email,
       password: data.password,

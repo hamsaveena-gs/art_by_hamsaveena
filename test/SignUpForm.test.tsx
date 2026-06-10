@@ -25,6 +25,9 @@ async function fillValidForm() {
 describe('SignUpForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    global.fetch = jest.fn().mockResolvedValue({
+      json: async () => ({ exists: false }),
+    });
     mockSignUp.mockResolvedValue({ error: null });
   });
 

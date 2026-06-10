@@ -19,6 +19,9 @@ jest.mock('@/lib/supabase', () => ({
 describe('LoginForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    global.fetch = jest.fn().mockResolvedValue({
+      json: async () => ({ exists: true }),
+    });
     mockSignIn.mockResolvedValue({ error: null });
   });
 

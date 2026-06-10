@@ -28,6 +28,19 @@ export default function ForgotPasswordForm() {
 
   const onSubmit = async (data: FormValues) => {
     setAuthError(null);
+
+    const res = await fetch('/api/auth/check-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: data.email }),
+    });
+    const { exists } = await res.json();
+
+    if (!exists) {
+      setAuthError('No account found with this email address');
+      return;
+    }
+
     const origin = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
     const redirectTo = `${origin}/reset-password`;
     const { error } = await getSupabase().auth.resetPasswordForEmail(data.email, {

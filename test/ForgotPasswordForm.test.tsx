@@ -3,6 +3,9 @@ import userEvent from '@testing-library/user-event';
 import ForgotPasswordForm from '@/features/auth/components/ForgotPasswordForm';
 
 const mockResetPasswordForEmail = jest.fn();
+const mockFetch = jest.fn();
+
+global.fetch = mockFetch;
 
 jest.mock('@/lib/supabase', () => ({
   getSupabase: () => ({
@@ -17,6 +20,9 @@ jest.mock('next/navigation', () => ({
 describe('ForgotPasswordForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockFetch.mockResolvedValue({
+      json: async () => ({ exists: true }),
+    });
   });
 
   it('renders email field and submit button', () => {
@@ -81,5 +87,15 @@ describe('ForgotPasswordForm', () => {
     await waitFor(() => {
       expect(screen.queryByText(/check your email/i)).not.toBeInTheDocument();
     });
+  });
+
+  it('shows error when email does not exist', async () => {
+    mockFetch.mockResolvedValue({
+      json: async () => ({ exists: false }),
+    });
+    render(<ForgotPasswordForm />);
+    await userEvent.type(screen.getByLabelText(/email address/i), 'unknown@example.com');
+    await userEvent.click(screen.getByRole('button', { name: /send reset link/i }));
+    expect(await screen.findByText(/no account found/i)).toBeInTheDocument();
   });
 });

@@ -1,6 +1,12 @@
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useUser } from '@/hooks/useUser';
 
+const mockPush = jest.fn();
+
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 const mockUnsubscribe = jest.fn();
 const mockOnAuthStateChange = jest.fn();
 const mockGetSession = jest.fn();
@@ -141,5 +147,26 @@ describe('useUser', () => {
     expect(result.current.isLoggedIn).toBe(false);
     expect(result.current.firstName).toBeNull();
     expect(result.current.email).toBeNull();
+  });
+
+  it('redirects to /reset-password on PASSWORD_RECOVERY event', async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } });
+
+    let authCallback: (event: string, session: unknown) => void = () => {};
+    mockOnAuthStateChange.mockImplementation((cb: typeof authCallback) => {
+      authCallback = cb;
+      return { data: { subscription: { unsubscribe: mockUnsubscribe } } };
+    });
+
+    renderHook(() => useUser());
+    await waitFor(() => {});
+
+    act(() => {
+      authCallback('PASSWORD_RECOVERY', {
+        user: { email: 'test@example.com' },
+      });
+    });
+
+    expect(mockPush).toHaveBeenCalledWith('/reset-password');
   });
 });

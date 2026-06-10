@@ -6,7 +6,7 @@ export function mapProduct(row: any): Product {
   return {
     id:            row.id,
     name:          row.name,
-    slug:          row.slug ?? toSlug(row.name),
+    slug:          toSlug(row.name),
     category:      row.category,
     price:         row.price,
     originalPrice: row.original_price ?? undefined,
