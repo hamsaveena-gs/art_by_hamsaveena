@@ -956,20 +956,6 @@ body {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  background-color: var(--accent);
-  color: #ffffff;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.25rem 0.6rem;
-  border-radius: 4px;
-}
-
-.product-card-sold-out {
-  position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
   background-color: var(--fg);
   color: #ffffff;
   font-size: 0.6875rem;
@@ -983,7 +969,7 @@ body {
 .product-card-sale {
   position: absolute;
   top: 0.75rem;
-  right: 0.75rem;
+  left: 0.75rem;
   background-color: var(--danger);
   color: #ffffff;
   font-size: 0.6875rem;
