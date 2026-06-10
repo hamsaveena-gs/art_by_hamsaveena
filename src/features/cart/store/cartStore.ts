@@ -22,8 +22,9 @@ export const useCartStore = create<CartStore>()(
       addToCart: (product) =>
         set((state) => {
           const existing = state.items.find((i) => i.product.id === product.id);
+          const stockLimit = Math.min(MAX_QTY, product.stockQuantity || MAX_QTY);
           if (existing) {
-            if (existing.quantity >= MAX_QTY) return state; // already at max
+            if (existing.quantity >= stockLimit) return state;
             return {
               items: state.items.map((i) =>
                 i.product.id === product.id
@@ -45,7 +46,9 @@ export const useCartStore = create<CartStore>()(
           if (quantity <= 0) {
             return { items: state.items.filter((i) => i.product.id !== productId) };
           }
-          const capped = Math.min(quantity, MAX_QTY);
+          const item = state.items.find((i) => i.product.id === productId);
+          const stockLimit = item ? Math.min(MAX_QTY, item.product.stockQuantity || MAX_QTY) : MAX_QTY;
+          const capped = Math.min(quantity, stockLimit);
           return {
             items: state.items.map((i) =>
               i.product.id === productId ? { ...i, quantity: capped } : i

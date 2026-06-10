@@ -3,27 +3,33 @@
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import { useUser } from '@/hooks/useUser';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import type { Product } from '@/types';
 import Button from '@/components/ui/Button';
 import Text from '@/components/ui/Text';
 
-const MAX_QTY = 4;
+const MAX_CART = 4;
 
 interface AddToCartButtonProps {
   product: Product;
   size?: 'sm' | 'lg';
 }
 
+interface StockState {
+  status: 'ok' | 'sold-out' | 'low-stock';
+  available: number;
+}
+
 export default function AddToCartButton({ product, size = 'lg' }: AddToCartButtonProps) {
   const router = useRouter();
   const { isLoggedIn, loading } = useUser();
   const { addToCart, updateQuantity, items } = useCartStore();
-  const [stockError, setStockError] = useState(false);
+  const [stock, setStock] = useState<StockState | null>(null);
   const cartItem = items.find((i) => i.product.id === product.id);
   const currentQty = cartItem?.quantity ?? 0;
   const inCart = currentQty > 0;
-  const atMax = currentQty >= MAX_QTY;
+  const stockLimit = stock ? Math.min(MAX_CART, stock.available) : MAX_CART;
+  const atMax = currentQty >= stockLimit || currentQty >= MAX_CART;
 
   const requireAuth = (e: React.MouseEvent, action: () => void) => {
     e.preventDefault();
@@ -32,22 +38,42 @@ export default function AddToCartButton({ product, size = 'lg' }: AddToCartButto
     action();
   };
 
-  const checkStockThenAdd = useCallback(async () => {
-    setStockError(false);
+  const liveCheck = async (requestedQty: number): Promise<boolean> => {
     try {
       const res = await fetch(`/api/products/${product.id}/stock`);
       const { stock_quantity } = await res.json();
       if (stock_quantity <= 0) {
-        setStockError(true);
-        return;
+        setStock({ status: 'sold-out', available: 0 });
+        return false;
       }
-      addToCart(product);
+      if (requestedQty > stock_quantity) {
+        setStock({ status: 'low-stock', available: stock_quantity });
+        return false;
+      }
+      setStock({ status: 'ok', available: stock_quantity });
+      return true;
     } catch {
-      addToCart(product);
+      return true;
     }
-  }, [product, addToCart]);
+  };
 
-  if (stockError) {
+  const handleAdd = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (loading) return;
+    if (!isLoggedIn) { router.push('/login'); return; }
+    const ok = await liveCheck(currentQty + 1);
+    if (ok) addToCart(product);
+  };
+
+  const handleIncrement = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (loading) return;
+    if (!isLoggedIn) { router.push('/login'); return; }
+    const ok = await liveCheck(currentQty + 1);
+    if (ok) updateQuantity(product.id, currentQty + 1);
+  };
+
+  if (stock?.status === 'sold-out' || !product.inStock) {
     return (
       <Button variant="secondary" className={size === 'sm' ? 'btn-sm' : ''} disabled>
         Sold Out
@@ -55,10 +81,10 @@ export default function AddToCartButton({ product, size = 'lg' }: AddToCartButto
     );
   }
 
-  if (!product.inStock) {
+  if (stock?.status === 'low-stock') {
     return (
       <Button variant="secondary" className={size === 'sm' ? 'btn-sm' : ''} disabled>
-        Sold Out
+        Only {stock.available} left
       </Button>
     );
   }
@@ -79,7 +105,7 @@ export default function AddToCartButton({ product, size = 'lg' }: AddToCartButto
         <Button
           variant="custom"
           className="quantity-btn"
-          onClick={(e) => requireAuth(e, () => updateQuantity(product.id, currentQty + 1))}
+          onClick={handleIncrement}
           disabled={atMax}
           aria-label="Increase quantity"
         >
@@ -95,7 +121,7 @@ export default function AddToCartButton({ product, size = 'lg' }: AddToCartButto
       <Button
         variant="primary"
         className="btn-sm"
-        onClick={(e) => requireAuth(e, () => addToCart(product))}
+        onClick={handleAdd}
       >
         +
       </Button>
@@ -114,7 +140,7 @@ export default function AddToCartButton({ product, size = 'lg' }: AddToCartButto
   return (
     <Button
       variant={inCart ? 'success' : 'primary'}
-      onClick={(e) => requireAuth(e, () => addToCart(product))}
+      onClick={handleAdd}
     >
       {inCart ? 'Added to Cart ✓' : 'Add to Cart'}
     </Button>

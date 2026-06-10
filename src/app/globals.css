@@ -984,7 +984,7 @@ body {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  background-color: var(--accent);
+  background-color: var(--danger);
   color: #ffffff;
   font-size: 0.6875rem;
   font-weight: 700;

@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AddToCartButton from '@/features/product/components/AddToCartButton';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import type { Product } from '@/types';
@@ -17,7 +17,7 @@ const product: Product = {
   id: 'p1', name: 'Test Painting', slug: 'test-painting', category: 'Painting',
   price: 420, image: '/a.jpg', images: ['/a.jpg'],
   description: 'Test', dimensions: '10x10', medium: 'Oil',
-  tags: [], inStock: true, featured: false, rating: 4.5, reviews: 10,
+  tags: [], inStock: true, stockQuantity: 10, featured: false, rating: 4.5, reviews: 10,
 };
 
 const mockAddToCart = jest.fn();
@@ -34,6 +34,9 @@ function mockStore(items: { product: Product; quantity: number }[] = []) {
 beforeEach(() => {
   jest.clearAllMocks();
   mockStore();
+  global.fetch = jest.fn().mockResolvedValue({
+    json: async () => ({ stock_quantity: 10 }),
+  });
 });
 
 describe('AddToCartButton — size lg (default)', () => {
@@ -59,10 +62,10 @@ describe('AddToCartButton — size lg (default)', () => {
     expect(screen.getByRole('button', { name: 'Added to Cart ✓' })).toBeDisabled();
   });
 
-  it('calls addToCart when clicked', () => {
+  it('calls addToCart when clicked', async () => {
     render(<AddToCartButton product={product} />);
     fireEvent.click(screen.getByRole('button', { name: 'Add to Cart' }));
-    expect(mockAddToCart).toHaveBeenCalledWith(product);
+    await waitFor(() => expect(mockAddToCart).toHaveBeenCalledWith(product));
   });
 });
 
@@ -93,16 +96,16 @@ describe('AddToCartButton — size sm', () => {
     expect(mockUpdateQuantity).toHaveBeenCalledWith('p1', 1);
   });
 
-  it('calls updateQuantity with qty+1 when + is clicked', () => {
+  it('calls updateQuantity with qty+1 when + is clicked', async () => {
     mockStore([{ product, quantity: 2 }]);
     render(<AddToCartButton product={product} size="sm" />);
     fireEvent.click(screen.getByRole('button', { name: 'Increase quantity' }));
-    expect(mockUpdateQuantity).toHaveBeenCalledWith('p1', 3);
+    await waitFor(() => expect(mockUpdateQuantity).toHaveBeenCalledWith('p1', 3));
   });
 
-  it('calls addToCart when "+" is clicked from empty state', () => {
+  it('calls addToCart when "+" is clicked from empty state', async () => {
     render(<AddToCartButton product={product} size="sm" />);
     fireEvent.click(screen.getByRole('button', { name: '+' }));
-    expect(mockAddToCart).toHaveBeenCalledWith(product);
+    await waitFor(() => expect(mockAddToCart).toHaveBeenCalledWith(product));
   });
 });

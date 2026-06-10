@@ -40,7 +40,7 @@ export default function ProductCard({ product, query }: ProductCardProps) {
         {!product.inStock && (
           <Text variant="plain" as="span" className="product-card-sold-out">Sold Out</Text>
         )}
-        {product.inStock && product.stockQuantity <= 3 && (
+        {product.inStock && product.stockQuantity <= 2 && (
           <Text variant="plain" as="span" className="product-card-low-stock">
             Only {product.stockQuantity} left
           </Text>

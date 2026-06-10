@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCartStore } from '@/features/cart/store/cartStore';
@@ -16,7 +17,25 @@ const MAX_QTY = 4;
 export default function CartItem({ item }: CartItemProps) {
   const { removeFromCart, updateQuantity } = useCartStore();
   const { product, quantity } = item;
-  const atMax = quantity >= MAX_QTY;
+  const [stockError, setStockError] = useState(false);
+
+  const stockLimit = Math.min(MAX_QTY, product.stockQuantity || MAX_QTY);
+  const atMax = quantity >= stockLimit;
+
+  const handleIncrement = async () => {
+    setStockError(false);
+    try {
+      const res = await fetch(`/api/products/${product.id}/stock`);
+      const { stock_quantity } = await res.json();
+      if (stock_quantity <= 0 || quantity + 1 > stock_quantity) {
+        setStockError(true);
+        return;
+      }
+      updateQuantity(product.id, quantity + 1);
+    } catch {
+      updateQuantity(product.id, quantity + 1);
+    }
+  };
 
   return (
     <div className="cart-item">
@@ -52,15 +71,19 @@ export default function CartItem({ item }: CartItemProps) {
             <Button
               variant="custom"
               className="quantity-btn"
-              onClick={() => updateQuantity(product.id, quantity + 1)}
-              disabled={atMax}
+              onClick={handleIncrement}
+              disabled={atMax || stockError}
               aria-label="Increase quantity"
-              title={atMax ? 'Maximum quantity is 4' : undefined}
+              title={atMax ? 'No more stock available' : undefined}
             >
               +
             </Button>
           </div>
-          {atMax && <Text variant="plain" as="span" className="qty-max-label">Max 4</Text>}
+          {atMax && (
+            <Text variant="plain" as="span" className="qty-max-label">
+              {stockError ? 'Sold out' : `Max ${stockLimit}`}
+            </Text>
+          )}
 
           <Text variant="plain" as="span" className="cart-item-price">₹{product.price * quantity}</Text>
 
