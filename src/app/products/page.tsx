@@ -1,5 +1,7 @@
 import ProductsContent from '@/features/products/ProductsContent';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProductsPage({
   searchParams,
 }: {

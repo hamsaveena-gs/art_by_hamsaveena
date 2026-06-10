@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { mapProduct } from '@/lib/mapProduct';
 
+const NO_CACHE = { 'Cache-Control': 'no-cache, no-store, must-revalidate' };
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const category = searchParams.get('category');
@@ -36,8 +38,8 @@ export async function GET(request: NextRequest) {
   const { data, error } = await query.order('id');
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500, headers: NO_CACHE });
   }
 
-  return NextResponse.json((data ?? []).map(mapProduct));
+  return NextResponse.json((data ?? []).map(mapProduct), { headers: NO_CACHE });
 }
