@@ -14,8 +14,9 @@ export default function SearchBar() {
   const [open, setOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const cacheRef = useRef<Map<string, string[]>>(new Map());
+  const abortRef = useRef<AbortController | null>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -38,8 +39,36 @@ export default function SearchBar() {
     });
   }, [searchParams, router, startTransition]);
 
+  const doFetch = useCallback(async (q: string) => {
+    if (q.length < 2) {
+      setSuggestions([]);
+      setOpen(false);
+      return;
+    }
+    const cached = cacheRef.current.get(q);
+    if (cached) {
+      setSuggestions(cached);
+      setOpen(cached.length > 0);
+      return;
+    }
+    if (abortRef.current) abortRef.current.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    try {
+      const res = await fetch(`/api/suggestions?q=${encodeURIComponent(q)}`, { signal: controller.signal });
+      const data: string[] = await res.json();
+      cacheRef.current.set(q, data);
+      setSuggestions(data);
+      setOpen(data.length > 0);
+    } catch {
+      setSuggestions([]);
+      setOpen(false);
+    }
+  }, []);
+
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     setOpen(false);
     navigate(value);
   }, [value, navigate]);
@@ -56,22 +85,12 @@ export default function SearchBar() {
       return;
     }
 
-    // Debounce the suggestions fetch by 250 ms
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/suggestions?q=${encodeURIComponent(newValue.trim())}`);
-        const data: string[] = await res.json();
-        setSuggestions(data);
-        setOpen(data.length > 0);
-      } catch {
-        setSuggestions([]);
-        setOpen(false);
-      }
-    }, 250);
-  }, [navigate]);
+    debounceRef.current = setTimeout(() => doFetch(newValue.trim()), 400);
+  }, [navigate, doFetch]);
 
   const handleSuggestionClick = useCallback((suggestion: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     setValue(suggestion);
     setSuggestions([]);
     setOpen(false);
@@ -129,7 +148,6 @@ export default function SearchBar() {
               aria-selected={i === activeIndex}
               className={`search-suggestion-item${i === activeIndex ? ' search-suggestion-item--active' : ''}`}
               onMouseDown={(e) => {
-                // mousedown fires before blur — prevent form from losing focus first
                 e.preventDefault();
                 handleSuggestionClick(s);
               }}

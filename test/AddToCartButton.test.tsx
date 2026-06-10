@@ -14,7 +14,7 @@ jest.mock('@/hooks/useUser', () => ({
 jest.mock('@/features/cart/store/cartStore');
 
 const product: Product = {
-  id: 'p1', name: 'Test Painting', category: 'Painting',
+  id: 'p1', name: 'Test Painting', slug: 'test-painting', category: 'Painting',
   price: 420, image: '/a.jpg', images: ['/a.jpg'],
   description: 'Test', dimensions: '10x10', medium: 'Oil',
   tags: [], inStock: true, featured: false, rating: 4.5, reviews: 10,

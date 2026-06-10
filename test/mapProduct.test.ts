@@ -4,6 +4,7 @@ describe('mapProduct', () => {
   const row = {
     id:             'p1',
     name:           'Sunset Painting',
+    slug:           'sunset-painting',
     category:       'Painting',
     price:          299,
     original_price: 399,
@@ -23,6 +24,7 @@ describe('mapProduct', () => {
     const product = mapProduct(row);
     expect(product.id).toBe('p1');
     expect(product.name).toBe('Sunset Painting');
+    expect(product.slug).toBe('sunset-painting');
     expect(product.category).toBe('Painting');
     expect(product.price).toBe(299);
     expect(product.originalPrice).toBe(399);

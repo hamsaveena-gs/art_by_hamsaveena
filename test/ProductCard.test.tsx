@@ -13,6 +13,7 @@ jest.mock('@/hooks/useUser', () => ({
 const product: Product = {
   id:           'p1',
   name:         'Sunset Painting',
+  slug:         'sunset-painting',
   category:     'Painting',
   price:        299,
   image:        'https://images.unsplash.com/photo-1',
@@ -46,7 +47,7 @@ describe('ProductCard', () => {
   it('renders a link to the product detail page', () => {
     render(<ProductCard product={product} />);
     const links = screen.getAllByRole('link');
-    expect(links.some(l => l.getAttribute('href') === '/products/p1')).toBe(true);
+    expect(links.some(l => l.getAttribute('href') === '/products/sunset-painting')).toBe(true);
   });
 
   it('shows Sale badge when originalPrice is set', () => {

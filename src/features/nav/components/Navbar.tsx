@@ -11,6 +11,7 @@ import Heading from '@/components/ui/Heading';
 import Button from '@/components/ui/Button';
 import { useUser } from '@/hooks/useUser';
 import { getSupabase } from '@/lib/supabase';
+import { useCartStore } from '@/features/cart/store/cartStore';
 
 const baseNavLinks = [
   { href: '/',         label: 'Home' },
@@ -28,6 +29,7 @@ export default function Navbar() {
     : [...baseNavLinks, { href: '/login', label: 'Login' }];
 
   const handleSignOut = async () => {
+    useCartStore.getState().clearCart();
     await getSupabase().auth.signOut();
     router.push('/login');
   };

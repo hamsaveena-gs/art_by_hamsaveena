@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+const CACHE_HEADERS = { 'Cache-Control': 'public, max-age=60, stale-while-revalidate=120' };
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const q = searchParams.get('q')?.trim();
 
   if (!q || q.length < 2) {
-    return NextResponse.json([]);
+    return NextResponse.json([], { headers: CACHE_HEADERS });
   }
 
   const { data, error } = await supabase
@@ -16,7 +18,7 @@ export async function GET(request: NextRequest) {
     .limit(10);
 
   if (error) {
-    return NextResponse.json([], { status: 500 });
+    return NextResponse.json([], { status: 500, headers: CACHE_HEADERS });
   }
 
   const suggestions: string[] = [];
@@ -53,5 +55,5 @@ export async function GET(request: NextRequest) {
     if (result.length === 8) break;
   }
 
-  return NextResponse.json(result);
+  return NextResponse.json(result, { headers: CACHE_HEADERS });
 }

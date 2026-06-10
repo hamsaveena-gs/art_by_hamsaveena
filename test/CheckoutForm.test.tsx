@@ -22,6 +22,7 @@ const mockClearCart = jest.fn();
 const product: Product = {
   id: 'p1',
   name: 'Ocean Sunrise',
+  slug: 'ocean-sunrise',
   category: 'Painting',
   price: 200,
   image: '/ocean.jpg',

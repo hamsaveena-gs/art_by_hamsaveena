@@ -8,7 +8,7 @@ jest.mock('@/features/product/components/AddToCartButton', () =>
 
 function makeProduct(id: string): Product {
   return {
-    id, name: `Art ${id}`, category: 'Painting',
+    id, name: `Art ${id}`, slug: `art-${id}`, category: 'Painting',
     price: 100, image: '/a.jpg', images: ['/a.jpg'],
     description: 'Test', dimensions: '10x10', medium: 'Oil',
     tags: [], inStock: true, featured: false, rating: 4, reviews: 5,

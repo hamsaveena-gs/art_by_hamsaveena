@@ -7,6 +7,7 @@ function mapProduct(row: any): Product {
   return {
     id:            row.id,
     name:          row.name,
+    slug:          row.slug,
     category:      row.category,
     price:         row.price,
     originalPrice: row.original_price ?? undefined,

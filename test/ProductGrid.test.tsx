@@ -11,7 +11,7 @@ jest.mock('@/features/product/components/AddToCartButton', () =>
 
 function makeProduct(id: string, overrides: Partial<Product> = {}): Product {
   return {
-    id, name: `Product ${id}`, category: 'Painting',
+    id, name: `Product ${id}`, slug: `product-${id}`, category: 'Painting',
     price: 100, image: '/a.jpg', images: ['/a.jpg'],
     description: 'Test', dimensions: '10x10', medium: 'Oil',
     tags: [], inStock: true, featured: false, rating: 4, reviews: 5,

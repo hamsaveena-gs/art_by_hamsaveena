@@ -15,6 +15,7 @@ export interface CategoryItem {
 export interface Product {
   id: string;
   name: string;
+  slug: string;
   category: Category;
   price: number;
   originalPrice?: number;

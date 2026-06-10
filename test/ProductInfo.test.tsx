@@ -7,7 +7,7 @@ jest.mock('@/features/product/components/AddToCartButton', () =>
 );
 
 const product: Product = {
-  id: 'p1', name: 'Sunset Over Venice', category: 'Painting',
+  id: 'p1', name: 'Sunset Over Venice', slug: 'sunset-over-venice', category: 'Painting',
   price: 420, originalPrice: 520, image: '/a.jpg', images: ['/a.jpg'],
   description: 'A luminous oil painting.',
   dimensions: '24" × 36"', medium: 'Oil on linen canvas',

@@ -28,7 +28,8 @@ export default function ForgotPasswordForm() {
 
   const onSubmit = async (data: FormValues) => {
     setAuthError(null);
-    const redirectTo = `${window.location.origin}/reset-password`;
+    const origin = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+    const redirectTo = `${origin}/reset-password`;
     const { error } = await getSupabase().auth.resetPasswordForEmail(data.email, {
       redirectTo,
     });

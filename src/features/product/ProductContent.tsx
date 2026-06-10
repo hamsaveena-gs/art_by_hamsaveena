@@ -7,15 +7,18 @@ import { getSupabase } from '@/lib/supabase';
 import { mapProduct } from '@/lib/mapProduct';
 
 interface ProductContentProps {
-  id: string;
+  slug: string;
 }
 
-async function fetchProduct(id: string): Promise<Product | null> {
+async function fetchProduct(slug: string): Promise<Product | null> {
+  const namePattern = slug.replace(/-/g, ' ');
   const { data, error } = await getSupabase()
     .from('products')
     .select('*')
-    .eq('id', id)
-    .single();
+    .ilike('name', `%${namePattern}%`)
+    .order('id')
+    .limit(1)
+    .maybeSingle();
 
   if (error || !data) return null;
   return mapProduct(data);
@@ -33,8 +36,8 @@ async function fetchRelated(category: string, currentId: string): Promise<Produc
   return data.map(mapProduct);
 }
 
-export default async function ProductContent({ id }: ProductContentProps) {
-  const product = await fetchProduct(id);
+export default async function ProductContent({ slug }: ProductContentProps) {
+  const product = await fetchProduct(slug);
   if (!product) notFound();
 
   const related = await fetchRelated(product.category, product.id);

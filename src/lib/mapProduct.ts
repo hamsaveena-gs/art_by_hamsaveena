@@ -1,3 +1,4 @@
+import { toSlug } from '@/lib/slug';
 import type { Product } from '@/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -5,6 +6,7 @@ export function mapProduct(row: any): Product {
   return {
     id:            row.id,
     name:          row.name,
+    slug:          row.slug ?? toSlug(row.name),
     category:      row.category,
     price:         row.price,
     originalPrice: row.original_price ?? undefined,

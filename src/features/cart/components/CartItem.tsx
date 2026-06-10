@@ -20,7 +20,7 @@ export default function CartItem({ item }: CartItemProps) {
 
   return (
     <div className="cart-item">
-      <Link href={`/products/${product.id}`} className="cart-item-image-wrap">
+      <Link href={`/products/${product.slug}`} className="cart-item-image-wrap">
         <Image
           src={product.image}
           alt={product.name}
@@ -33,7 +33,7 @@ export default function CartItem({ item }: CartItemProps) {
       <div className="cart-item-body">
         <div className="cart-item-info">
           <Text variant="plain" as="p" className="cart-item-category">{product.category}</Text>
-          <Link href={`/products/${product.id}`} className="cart-item-name">
+          <Link href={`/products/${product.slug}`} className="cart-item-name">
             {product.name}
           </Link>
         </div>
