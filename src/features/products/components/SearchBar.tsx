@@ -86,7 +86,7 @@ export default function SearchBar() {
     }
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => doFetch(newValue.trim()), 400);
+    debounceRef.current = setTimeout(() => doFetch(newValue.trim()), 600);
   }, [navigate, doFetch]);
 
   const handleSuggestionClick = useCallback((suggestion: string) => {
