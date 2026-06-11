@@ -18,7 +18,7 @@ const schema = z.object({
   firstName:  z.string().min(1, 'First name is required').regex(/^[a-zA-Z\s'-]+$/, 'First name must contain only letters'),
   lastName:   z.string().min(1, 'Last name is required').regex(/^[a-zA-Z\s'-]+$/, 'Last name must contain only letters'),
   email:      z.email('Enter a valid email address'),
-  phone:      z.string().min(7, 'Enter a valid phone number').max(10, 'Phone number must not exceed 10 digits'),
+  phone:      z.string().min(10, 'Enter a valid phone number').max(10, 'Phone number must not exceed 10 digits'),
   address:    z.string().min(5, 'Enter your full street address'),
   city:       z.string().min(1, 'City is required'),
   postcode:   z.string().regex(/^\d{6}$/, 'Postcode must be exactly 6 digits'),

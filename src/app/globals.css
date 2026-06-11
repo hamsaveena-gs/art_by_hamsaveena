@@ -530,6 +530,7 @@ body {
   text-decoration: none;
   flex-shrink: 0;
   transition: color 0.2s;
+  font-family: var(--font-accent);
 }
 .nav-brand:hover { color: var(--fg-muted); }
 

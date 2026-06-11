@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-const CACHE_HEADERS = { 'Cache-Control': 'public, max-age=60, stale-while-revalidate=120' };
+const CACHE_HEADERS = { 'Cache-Control': 'public, max-age=120, stale-while-revalidate=240' };
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
